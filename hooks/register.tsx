@@ -3,7 +3,7 @@ import type { EngineInterface, Register, ThemeSetArgs, Timer } from 'claude-code
 
 import { COLOR_PROBLEMS, COLORS } from './look'
 import { hazeLevel, hazeOverlay, MAX_MARKS, OVERLAY_SLOT, overlayAlt, taskOverlay } from './overlay'
-import { SCENE, SCENE_AMAZE, SCENE_ASK, SCENE_LAUNCH, SCENE_LEAVE, SCENE_PERMIT, SCENE_RETURN, SCENE_WORK, SYNC } from './scene'
+import { SCENE, SCENE_AMAZE, SCENE_ASK, SCENE_LAUNCH, SCENE_LEAVE, SCENE_PERMIT, SCENE_RETURN, SCENE_SALVO, SCENE_WORK, SYNC } from './scene'
 import type { Haze, Mark, Stage, Tasks } from '../types'
 
 // Grace's dome on Erid: the Eridian-built beach under a milky dome sky, his
@@ -12,6 +12,7 @@ import type { Haze, Mark, Stage, Tasks } from '../types'
 //   working  – the dome lamps come on, Grace's window glows, the sea livens up
 //   launch   – a subagent starts: a Beetle probe streaks across the dome
 //   return   – a subagent finishes: the Beetle drops back home behind the hill
+//   salvo    – Claude pushes its work: four Beetles launch in turn and fan out, carrying it home
 //   asking   – Rocky walks up in his glass suit, waves, sings chords, stomps if you take a while
 //   permit   – a permission prompt waits: Rocky walks up holding an "ALLOW, QUESTION?" sign
 //   leaving  – the question or prompt is answered or dropped: he walks back out
@@ -26,6 +27,7 @@ const GLASS = { blur: 28, opacity: 0.42 }
 const WALK_OUT_MS = 2800 // the leave scene's walk (2.4s) plus a little slack
 const LAUNCH_MS = 2900 // the Beetle's flight (2.6s) plus a little slack
 const RETURN_MS = 2900 // and its flight home
+const SALVO_MS = 4400 // four Beetles half a second apart (the last leaves at 1.5s, flies 2.6s) plus a little slack
 const AMAZE_MS = 6700 // pop in, celebrate, walk out (6.4s) plus a little slack
 const LONG_TURN_MS = 60_000 // a turn at least this long earns an "AMAZE!"
 const CLEAR_MARKS_MS = 12_000 // once every task is done and the turn ends, the lamps stay this long
@@ -36,6 +38,7 @@ const SCENES: Record<Stage, string> = {
   working: SCENE_WORK,
   launch: SCENE_LAUNCH,
   return: SCENE_RETURN,
+  salvo: SCENE_SALVO,
   asking: SCENE_ASK,
   permit: SCENE_PERMIT,
   leaving: SCENE_LEAVE,
@@ -46,6 +49,7 @@ const ALTS: Record<Stage, string> = {
   working: "The Erid beach with the dome's lamps lit and Grace's window glowing while Claude works",
   launch: 'A Beetle probe streaks across the dome sky, its drive trailing amber',
   return: 'A Beetle probe drops back down the dome sky and lands behind the hill',
+  salvo: 'Four Beetle probes launch one after another and fan out across the dome sky, carrying the work home',
   asking: 'Rocky, in his faceted glass suit, walks up the Erid beach, waves and sings in chords while Claude waits for your answer',
   permit: 'Rocky walks up the Erid beach holding up an "ALLOW, QUESTION?" sign while Claude waits for your permission',
   leaving: 'Rocky walks back off along the Erid beach',
@@ -105,15 +109,20 @@ async function leave($: EngineInterface) {
   settle($, WALK_OUT_MS, 'leaving')
 }
 
-// a Beetle flies (out for a new subagent, home for a finished one) unless Rocky is on the beach
-async function fly($: EngineInterface, to: 'launch' | 'return') {
+// Beetles fly (out for a new subagent, home for a finished one, a salvo for a push) unless Rocky is on the beach
+const FLIGHTS = { launch: LAUNCH_MS, return: RETURN_MS, salvo: SALVO_MS } as const
+
+async function fly($: EngineInterface, to: keyof typeof FLIGHTS) {
   const now = await read($, stage)
 
-  if (now === 'working' || now === 'idle' || now === 'launch' || now === 'return') {
+  if (now === 'working' || now === 'idle' || now in FLIGHTS) {
     await go($, to)
-    settle($, to === 'launch' ? LAUNCH_MS : RETURN_MS, to)
+    settle($, FLIGHTS[to], to)
   }
 }
+
+// a shell command that pushes with git (`git push`, `git -C dir push --tags`, after `&&`), not one that only mentions it
+const PUSH = /(^|[;&|(]\s*)git(\s+-[cC]\s+\S+|\s+--?[\w-]+(=\S+)?)*\s+push\b/
 
 // ---------- haze
 
@@ -206,7 +215,7 @@ export const register: Register = on => {
     await $.command.register({
       name: 'erid',
       description: "Put the Erid (Grace's dome) theme back on, or replay one of its reactions",
-      argumentHint: '[launch | return | ask | permit | amaze | working | haze 0-5 | tasks]',
+      argumentHint: '[launch | return | salvo | ask | permit | amaze | working | haze 0-5 | tasks]',
     })
 
     return next(e)
@@ -221,9 +230,9 @@ export const register: Register = on => {
     }
     const [want = '', arg] = e.args.trim().split(/\s+/)
 
-    if (want === 'launch' || want === 'return' || want === 'amaze') {
+    if (want === 'launch' || want === 'return' || want === 'salvo' || want === 'amaze') {
       await go($, want)
-      settle($, want === 'launch' ? LAUNCH_MS : want === 'return' ? RETURN_MS : AMAZE_MS, want)
+      settle($, want === 'amaze' ? AMAZE_MS : FLIGHTS[want], want)
 
       return { text: `Erid: playing "${want}".` }
     }
@@ -268,7 +277,7 @@ export const register: Register = on => {
       return { text: 'Erid: four marker lamps for 15 seconds; the second lights after 3.' }
     }
 
-    return { text: want === '' ? 'Erid theme is back on.' : 'Usage: /erid [launch | return | ask | permit | amaze | working | haze 0-5 | tasks]' }
+    return { text: want === '' ? 'Erid theme is back on.' : 'Usage: /erid [launch | return | salvo | ask | permit | amaze | working | haze 0-5 | tasks]' }
   })
 
   // Claude starts a turn of the main conversation: the dome lights up
@@ -354,6 +363,18 @@ export const register: Register = on => {
 
     return result
   }).catch(($, e, next) => next(e)) // a failed lamp or haze update never holds up the tool
+
+  // Claude pushed its work (from any loop): once git answers without an error, a salvo of Beetles flies it home
+  on('tool.call', { tool: 'Bash' }, async ($, e, next) => {
+    const result = await next(e)
+    const isFailed = result.deny !== undefined || ('isError' in result && result.isError === true)
+
+    if (!isFailed && PUSH.test(e.command)) {
+      await fly($, 'salvo')
+    }
+
+    return result
+  }).catch(($, e, next) => next(e)) // a failed backdrop update never holds up the command
 
   // Claude Code's own task tools (TaskCreate, TaskUpdate) report through the classic task events
   on('classic.TaskCreated', async ($, e, next) => {

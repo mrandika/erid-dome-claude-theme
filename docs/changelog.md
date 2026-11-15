@@ -52,6 +52,12 @@ How the theme got here, built over one session on 2026-11-15.
 - Fixed the permit scene losing Rocky's sign and limbs after the walk-in: a 0.01 s `step-end` reveal with only a `to` keyframe ended back at opacity 0 in Chrome. Its keyframes now hold 1 at both ends (`from,to`).
 - Fixed a blank backdrop: the render hook's haze variable was named `h`, hiding the JSX factory, so the hook threw and was skipped. A render test now catches it.
 
+**0.4.0: the Beetles fly home**
+- A successful `git push` sends a salvo: four Beetles (John, Paul, George, Ringo) launch half a second apart and fan out across Erid's sky, as Grace sent his data home.
+- Beetles now fly outside the dome: drawn behind its ribs and clouds at 80% opacity, seen through the glass. Flying them inside an enclosed habitat didn't make sense (the user's catch). The launch and return previews were re-rendered.
+- Every Beetle now launches from behind the ridge at the left edge and climbs out of the top, past Grace's house: the upper right, where they used to fly, sits under the chat panel.
+- `/erid salvo`, a push test, and a salvo preview.
+
 **Softer frosting**
 - Panel glass raised from blur 12 / opacity 0.62 to blur 28 / opacity 0.55. At 12 the pixel cliff, house and arch showed through as blocky smears; at 28 they melt into a colour wash and a little more of the scene tint reaches the panels.
 - Opacity then lowered to 0.42: the light-mode panel (a pale grey) over the dark sand lifted it to a milky white haze at the bottom of the chat. A tint can't fix it, since the one tint applies in both modes and the mod can't tell which is showing.

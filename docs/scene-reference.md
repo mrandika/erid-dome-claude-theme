@@ -40,9 +40,9 @@ Root SVG: `viewBox="0 -173.3 1600 1246.7"` and `preserveAspectRatio="xMinYMid sl
 
 ## Layers, back to front
 
-1. **Sky:** flat bands `sky0…sky4` starting at rows −27, 16, 36, 58 and 78, with checker-dither seams (`<pattern id="dN">`).
+1. **Sky:** flat bands `sky0…sky4` starting at rows −27, 16, 36, 58 and 78, with checker-dither seams (`<pattern id="dN">`). **`{{SKY}}`** follows: what flies outside the dome (the Beetles), at 80% opacity, so the ribs and clouds draw over it and it reads as seen through the milky glass.
 2. **Dome ribs:** six latitude half-ellipses and eleven meridians, as one path with class `rib`. **Lamps** (`lamp`) are scattered on rib crossings and hidden by day.
-3. **Clouds:** `cl` and `cl2` pixel clouds. **`{{SKY}}`** marks where the Beetle is inserted in the launch scene.
+3. **Clouds:** `cl` and `cl2` pixel clouds.
 4. **Rock:** a raster of `rockColor(x, y)`, quantised to the rock palette with Bayer dither. Under it, a **per-row underlay** of each row's most common colour hides anti-alias seams. The top rim, the arch's inner shadow, the stairs, the house and the truss are drawn into the same grid.
 5. **Window glow:** `<rect class="glow">`, shown at night and in work mode.
 6. **Tree:** trunk, then the canopy inside `<g class="sw">`.
@@ -111,7 +111,7 @@ Every state change loads a different scene, which restarts its CSS. `scene.ts` e
 
 Rocky's routines and the Beetle are deliberately left out, because they start fresh.
 
-## The eight scenes
+## The nine scenes
 
 | Export | File | Built from | About |
 |---|---|---|---|
@@ -119,6 +119,7 @@ Rocky's routines and the Beetle are deliberately left out, because they start fr
 | `SCENE_WORK` | `-work.svg` | base + `WORK` CSS: lamps on in amber, window and glow amber and pulsing, ribs at 50% | 103K |
 | `SCENE_LAUNCH` | `-launch.svg` | work + Beetle markup at `{{SKY}}` + `bt` animation | 105K |
 | `SCENE_RETURN` | `-return.svg` | work + the same Beetle, flown back by `br` | 105K |
+| `SCENE_SALVO` | `-salvo.svg` | work + four Beetles (`bs0`–`bs3`), 0.5 s apart | 109K |
 | `SCENE_ASK` | `-ask.svg` | base + `buildRocky('ask')` | 126K, the tightest |
 | `SCENE_PERMIT` | `-permit.svg` | base + `buildRocky('permit')`: the ALLOW, QUESTION? sign | 122K |
 | `SCENE_LEAVE` | `-leave.svg` | base + `buildRocky('leave')` | 113K |
@@ -126,10 +127,12 @@ Rocky's routines and the Beetle are deliberately left out, because they start fr
 
 ### The Beetle
 
-- **Start:** at grid (70, 40), just behind the ridge near Grace's hill, so it emerges almost at once.
+- **Start:** at grid (8, 68) (`BEETLE_FROM`), just behind the ridge at the left edge, so it emerges almost at once. The flights stay on the left, since the chat's frosted panel covers the middle and right of the dome.
 - **Probe:** a 6×4 dark body (`h0`) with a lit top edge (`lat`) and a drive flare in `nt3` and `nt2` at its lower-left, trailing end.
 - **Trail:** nine copies of a one-pixel trail mark, each on the same path with 0.07 s more delay and 10% less opacity.
-- **Flight:** `bt`, 2.6 s with `cubic-bezier(.4,0,.8,.7)` so it speeds up, to `translate(180px, -74px)`. It's hidden at the end.
+- **Flight:** `bt`, 2.6 s with `cubic-bezier(.4,0,.8,.7)` so it speeds up, to `translate(24px, -104px)`: up past Grace's house and off the top. It's hidden at the end.
+- **Outside the dome:** Beetles sit in the `{{SKY}}` slot, behind the ribs and clouds, since they fly in Erid's sky, not inside the habitat.
+- **Salvo:** four Beetles from the same start, launched 0, 0.5, 1 and 1.5 s in, each with its own keyframes fanning out to `translate(24px,-104px)`, `(44px,-100px)`, `(6px,-108px)` and `(62px,-98px)`. All end off the top; the widest passes behind the house and tree. `beetleOf(cls, at)` builds each with its trail.
 - **Return:** `br` flies the same path backwards in 2.6 s, easing out (`cubic-bezier(.2,.4,.5,1)`) so it brakes, drive flare first, and is hidden once it sinks behind the ridge.
 
 ## The overlay slot

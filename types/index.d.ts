@@ -1,9 +1,9 @@
 // What the beach is showing, from what Claude is doing:
 // idle (plain beach), working (dome lamps on), launch (a Beetle flies for a new subagent),
-// return (a Beetle comes home: a subagent finished), asking (Rocky waits on your answer),
+// return (a Beetle comes home: a subagent finished), salvo (four Beetles fly home: Claude pushed), asking (Rocky waits on your answer),
 // permit (Rocky holds up an "ALLOW, QUESTION?" sign while a permission prompt waits), leaving (he walks out),
 // amaze (a long task just finished)
-export type Stage = 'idle' | 'working' | 'launch' | 'return' | 'asking' | 'permit' | 'leaving' | 'amaze'
+export type Stage = 'idle' | 'working' | 'launch' | 'return' | 'salvo' | 'asking' | 'permit' | 'leaving' | 'amaze'
 
 // The dome's haze, from how full the context window is: level 0 (clear) to 5 (dense).
 // `from` is the level it is fading out of since `at` (ms on the engine clock);

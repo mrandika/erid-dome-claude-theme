@@ -7,10 +7,12 @@ type Seen = { stage?: Stage; haze?: Haze; tasks?: Tasks }
 // The engine beneath the mod: a context window `fill`% full, a clock that moves only when told,
 // and the mod's state writes, recorded as they pass to the kit's own store.
 // (The kit draws no theme, so session.start stops at $.theme.set, after the haze is set.)
+let clock: ReturnType<typeof mock.clock> // the latest test's clock
+
 function engine(on: Parameters<typeof mock.clock>[0], fill: { percent: number }): Seen {
   const seen: Seen = {}
 
-  mock.clock(on, { now: 1_000_000 })
+  clock = mock.clock(on, { now: 1_000_000 })
   on('state.set', ($, e, next) => {
     if (e.plugin === 'erid-dome') {
       ;(seen as Record<string, unknown>)[e.key] = e.value
@@ -94,4 +96,18 @@ test('a subagent going out and coming home flies a Beetle each way', async ($, o
   // a subagent this load never launched brings nothing home
   await $.turn.complete({ answer: '', durationMs: 5_000, isAborted: false, turnId: 't2', agentId: 'zz', reason: 'answer' })
   expect(seen.stage).toBe('return')
+})
+
+test('a git push sends a salvo of Beetles home; a command that only mentions it does not', async ($, on) => {
+  const seen = engine(on, { percent: 10 })
+  await $.session.start({ cwd: '/', surface: 'desktop', isInteractive: true })
+
+  await $.tool.call({ tool: 'Bash', command: 'echo "git push later"' })
+  expect(seen.stage).toBe('idle')
+
+  await $.tool.call({ tool: 'Bash', command: 'git add -A && git commit -m x && git push -u origin main' })
+  expect(seen.stage).toBe('salvo')
+
+  await clock.advance(4_500)
+  expect(seen.stage).toBe('idle')
 })

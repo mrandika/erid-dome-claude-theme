@@ -17,7 +17,7 @@ In the film's ending, Grace lives on Erid inside an Eridian-built biodome, compl
 | **Taumoeba** | The Astrophage-eating microbe found near Tau Ceti | not drawn |
 | **Hail Mary** | Grace's ship | (the user's other mod, hail-mary) |
 | **Blip-A** | Rocky's ship | (hail-mary mod) |
-| **Beetles** | Four small return probes carrying the data home, named John, Paul, George and Ringo | The Beetle launch when a subagent starts |
+| **Beetles** | Four small return probes carrying the data home, named John, Paul, George and Ringo | A Beetle launch when a subagent starts; all four in a salvo when Claude pushes its work |
 | **Xenonite** | Eridian building material, extremely strong | Faceted, triangular construction of Grace's house; Rocky's glass suit |
 | **Erid** | Rocky's home planet, orbiting 40 Eridani | The whole scene |
 | **40 Eridani** | Erid's star (a K-type orange dwarf) | – |

@@ -73,6 +73,7 @@ One state value, `stage`, decides which scene draws:
 | `idle` | `SCENE` | Nothing running |
 | `working` | `SCENE_WORK` | A main-conversation turn is running |
 | `launch` | `SCENE_LAUNCH` | A subagent just started; the Beetle flies (passing) |
+| `salvo` | `SCENE_SALVO` | A `git push` just succeeded; four Beetles fly (passing) |
 | `return` | `SCENE_RETURN` | A subagent this load launched just finished; the Beetle lands (passing) |
 | `asking` | `SCENE_ASK` | Claude is writing or showing an `AskUserQuestion` |
 | `permit` | `SCENE_PERMIT` | A permission prompt is waiting; Rocky holds up "ALLOW, QUESTION?" |
@@ -115,12 +116,13 @@ stateDiagram-v2
 | `classic.Notification` | A `permission_prompt` notice goes to `permit` too, for prompts no PermissionRequest announced |
 | `classic.PermissionDenied` | `leave()` |
 | `tool.call` (every main-loop tool) | After the call: leaves `permit` if this was the tool the prompt waited on; moves the task lamps for `mcp__ccd_turn__update_plan` (`items`, `advance`, `done`, `start`) and `mcp__ccd_turn__wrap_up` (all done); re-reads the context fill for the haze |
+| `tool.call {tool: Bash}` | From any loop: when the command runs `git … push` (matched as a command, not a mention: `PUSH`) and answers without an error or refusal, `fly($, 'salvo')` |
 | `classic.TaskCreated` / `classic.TaskCompleted` | Add a lamp / light it, for Claude Code's own task tools |
 | `session.measure` | After each main turn: a moved context fill sets the haze level |
 | `session.compact` | A compaction that stands (not `precompute`) sets the haze from `tokensAfter`, marked as clearing so the old haze blows away |
 | `turn.complete` | A subagent's: if this load launched it, the Beetle comes home (`return`, 2.9 s). Main loop: not busy. If asking or permit, `leave()`. Otherwise, if the turn ended with `reason: 'answer'`, wasn't aborted and took `durationMs ≥ LONG_TURN_MS` (60 000), goes to `amaze` with a 6.7 s hand-back. Otherwise `working` becomes `idle`; a passing stage keeps playing and hands back to `idle`. A list with every lamp lit clears 12 s later |
 | `ui.render {component: Backdrop}` | Desktop and mobile only, and only for scene `erid-dome`. Reads `stage`, `haze` and `tasks`, picks the scene, appends the clock-synced `animation-delay` rules (`SYNC`) and the live layers' CSS before `</style>`, puts the layers in the `ov` slot (dropping lamps, then haze, past 131,072 characters), and returns `<Svg source alt isInteractive />` |
-| `command.run {command: erid}` | Re-sets the theme; `/erid launch` · `return` · `ask` · `permit` · `amaze` · `working` replays a stage (ask and permit hold 16 s, working 8 s); `haze 0-5` sets the haze; `tasks` shows four demo lamps for 15 s |
+| `command.run {command: erid}` | Re-sets the theme; `/erid launch` · `return` · `salvo` · `ask` · `permit` · `amaze` · `working` replays a stage (ask and permit hold 16 s, working 8 s); `haze 0-5` sets the haze; `tasks` shows four demo lamps for 15 s |
 
 ### Timers and helpers
 
@@ -131,7 +133,7 @@ These are top-level functions; the validator requires that any helper receiving 
 | `go($, stage)` | Cancels any pending hand-back and writes the stage |
 | `settle($, ms, from)` | Schedules `$.clock.after(ms)` to replace `from` with `isBusy ? 'working' : 'idle'`, but only if the stage is still `from` |
 | `arrive($, to)` / `leave($)` | Enter `asking` or `permit` / go from either to `leaving` and settle |
-| `fly($, to)` | From `idle`, `working`, `launch` or `return`, play `launch` or `return` and settle |
+| `fly($, to)` | From `idle`, `working` or another flight, play `launch`, `return` or `salvo` and settle (`FLIGHTS` holds each one's length) |
 | `setHaze($, level, isClearing?)` / `measureHaze($)` | Write a haze level with its fade start / read the fill from `$.session.usage()` |
 | `setMarks($, fn)` | Replace the lamps, noting which were added and which just lit, and cancel a pending clear |
 | `planMarks(marks, input)` | Applies an `update_plan` call to the lamps (pure) |
@@ -145,6 +147,7 @@ The module variables `isBusy`, `pending`, `clearing`, `permitTool` and the launc
 | `WALK_OUT_MS` | 2800 | The leave walk, 2.4 s |
 | `LAUNCH_MS` | 2900 | The Beetle's flight, 2.6 s |
 | `RETURN_MS` | 2900 | The Beetle's flight home, 2.6 s |
+| `SALVO_MS` | 4400 | The salvo: the last Beetle leaves at 1.5 s and flies 2.6 s |
 | `AMAZE_MS` | 6700 | The amaze timeline, 6.4 s |
 | `CLEAR_MARKS_MS` | 12 000 | How long a finished task list stays lit after the turn |
 | `STEPS` (`overlay.ts`) | 35, 50, 62, 74, 85 | Context fill (%) where haze levels 1–5 begin |
@@ -173,7 +176,7 @@ The version folder changes when the app updates. Type-check with the engine's ty
 npx -y -p typescript@5.6.3 tsc -p /path/to/erid-dome-claude-theme
 ```
 
-Run the tests with the app's binary, `"$APP" plugin test .` (an older `claude` doesn't know `Backdrop`): the backdrop render, task lamps, haze and compaction, permission prompt, Beetle return. Never name a variable `h` in a module with JSX: it hides the global `h` the JSX compiles to, and the render hook is skipped, leaving the backdrop blank.
+Run the tests with the app's binary, `"$APP" plugin test .` (an older `claude` doesn't know `Backdrop`): the backdrop render, task lamps, haze and compaction, permission prompt, Beetle return, push salvo. Never name a variable `h` in a module with JSX: it hides the global `h` the JSX compiles to, and the render hook is skipped, leaving the backdrop blank.
 
 **Validator rules this mod follows:**
 - A state contract (`types/index.d.ts`) may only `export type` or `interface`, so no `export {}`.

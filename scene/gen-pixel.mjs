@@ -1,6 +1,6 @@
 // Pixel-art Erid beach (Grace's dome) — generates the backdrop SVG.
 // usage (from the project folder): node scene/gen-pixel.mjs [<out.svg>] [<out scene.ts>]
-//   defaults: scene/erid-dome.svg (+ -work, -launch, -return, -ask, -permit, -leave, -amaze) and hooks/scene.ts
+//   defaults: scene/erid-dome.svg (+ -work, -launch, -return, -salvo, -ask, -permit, -leave, -amaze) and hooks/scene.ts
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -230,9 +230,9 @@ const css = `rect{stroke:none!important}path{fill:none!important}${cls}
 @media (prefers-color-scheme:dark){${ncls}.rib{stroke:${PAL[IDX.rib][2]};opacity:.65}.lamp{opacity:1;animation:lp 5s step-end infinite}.glow{opacity:.35}}`
 
 const body = `<g stroke-width="1.1" transform="scale(${r1(S * 1000) / 1000})">
-${skyD}
+${skyD}{{SKY}}
 <path class="rib" d="${ribD}"/><path class="lamp c${IDX.lamp}" d="${lampD}"/>
-<path class="cl c${IDX.cloud}" d="${cloud(10, 22, 40)}${cloud(150, 14, 46)}"/><path class="cl2 c${IDX.cloud}" d="${cloud(178, 50, 30)}${cloud(70, 8, 26)}"/>{{SKY}}
+<path class="cl c${IDX.cloud}" d="${cloud(10, 22, 40)}${cloud(150, 14, 46)}"/><path class="cl2 c${IDX.cloud}" d="${cloud(178, 50, 30)}${cloud(70, 8, 26)}"/>
 ${paths(underlay(rock))}${paths(runsOf(rock))}
 <rect class="glow c${IDX.glow}" x="44" y="40" width="7" height="6"/>
 ${paths(mapRuns(trunk))}<g class="sw">${paths(mapRuns(canopy))}</g>
@@ -247,7 +247,8 @@ ${swash}
 const wrap = (style, inner) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 ${r1(-PAD)} ${W} ${r1(H + 2 * PAD)}" preserveAspectRatio="xMinYMid slice"><style>${style}</style><defs>${defs}</defs>${inner}</svg>`.replace(/\n/g, '')
 // OVERLAY marks where the mod draws its live layers (the haze, the task markers): over the beach, under Rocky
 const OVERLAY = '<g class="ov"></g>'
-const scene = ({ style = '', sky = '', front = '' } = {}) => wrap(css + style, body.replace('{{SKY}}', sky).replace(/<\/g>$/, OVERLAY + front + '</g>'))
+// `sky` is outside the dome (the Beetles): drawn behind its ribs and clouds and veiled a little by the milky glass
+const scene = ({ style = '', sky = '', front = '' } = {}) => wrap(css + style, body.replace('{{SKY}}', sky && `<g opacity=".8">${sky}</g>`).replace(/<\/g>$/, OVERLAY + front + '</g>'))
 
 // working: Claude is on a turn — the dome lamps come on, Grace's window glows, the sea livens up
 const WORK = `.lamp{opacity:1;animation:lp 5s step-end infinite}
@@ -255,16 +256,21 @@ const WORK = `.lamp{opacity:1;animation:lp 5s step-end infinite}
 .glow{opacity:.5;animation:gw 1.6s step-end infinite}@keyframes gw{50%{opacity:.3}}
 .rib{opacity:.5}`
 
-// a Beetle launch: a small probe with an amber Astrophage-drive trail, rising from behind the hill
+// a Beetle launch: a small probe with an amber Astrophage-drive trail, rising from behind the ridge at the left edge
 // across the dome to the upper right (a subagent has set off)
-const BEETLE_PATH = 'translate(180px,-74px)'
-const beetle = (() => {
-  // a stubby dark probe, lit edge on top, its drive flaring amber/red at the trailing (lower-left) end
+// from behind the ridge at the left edge, up past Grace's house and out of the top: the right of the dome sits under the chat
+const BEETLE_FROM = [8, 68]
+const BEETLE_PATH = 'translate(24px,-104px)'
+// a stubby dark probe, lit edge on top, its drive flaring amber/red at the trailing (lower-left) end,
+// with a nine-mark trail on the same path; `cls` names its flight, `at` delays it
+const beetleOf = (cls, at = 0) => {
   const probe = `<path class="c${IDX.h0}" d="M0 -2.5h4M-1 -1.5h6M-1 -0.5h6M0 0.5h4"/><path class="c${IDX.lat}" d="M1 -2.5h2M0 -1.5h1"/>`
     + `<path class="c${IDX.nt3}" d="M-3 -0.5h2M-2 0.5h2"/><path class="c${IDX.nt2}" d="M-4 0.5h2M-3 1.5h1"/>`
-  const trail = Array.from({ length: 9 }, (_, i) => i + 1).map(i => `<g class="bt" style="animation-delay:${(i * .07).toFixed(2)}s;opacity:${(1 - i * .1).toFixed(2)}"><path class="c${i < 4 ? IDX.nt3 : IDX.nt2}" d="M-3 0.5h${i < 4 ? 2 : 1}"/></g>`).join('')
-  return `<g transform="translate(70 40)">${trail}<g class="bt">${probe}</g></g>`
-})()
+  const delay = i => (at || i ? `animation-delay:${(at + i * .07).toFixed(2)}s;` : '')
+  const trail = Array.from({ length: 9 }, (_, i) => i + 1).map(i => `<g class="${cls}" style="${delay(i)}opacity:${(1 - i * .1).toFixed(2)}"><path class="c${i < 4 ? IDX.nt3 : IDX.nt2}" d="M-3 0.5h${i < 4 ? 2 : 1}"/></g>`).join('')
+  return `<g transform="translate(${BEETLE_FROM[0]} ${BEETLE_FROM[1]})">${trail}<g class="${cls}"${at ? ` style="${delay(0)}"` : ''}>${probe}</g></g>`
+}
+const beetle = beetleOf('bt')
 const LAUNCH = `${WORK}
 .bt{animation:bt 2.6s cubic-bezier(.4,0,.8,.7) both}@keyframes bt{0%{transform:none;visibility:visible}96%{visibility:visible}100%{transform:${BEETLE_PATH};visibility:hidden}}`
 
@@ -273,17 +279,25 @@ const LAUNCH = `${WORK}
 const RETURN = `${WORK}
 .bt{animation:br 2.6s cubic-bezier(.2,.4,.5,1) both}@keyframes br{0%{transform:${BEETLE_PATH};visibility:visible}96%{visibility:visible}100%{transform:none;visibility:hidden}}`
 
+// a salvo (Claude pushed its work): four Beetles, John, Paul, George and Ringo, launch half a second
+// apart and fan out across the dome, carrying the data home as Grace's did
+const SALVO_PATHS = ['translate(24px,-104px)', 'translate(44px,-100px)', 'translate(6px,-108px)', 'translate(62px,-98px)']
+const salvo = SALVO_PATHS.map((_, k) => beetleOf(`bs${k}`, k * .5)).join('')
+const SALVO = `${WORK}
+.bs0,.bs1,.bs2,.bs3{animation:2.6s cubic-bezier(.4,0,.8,.7) both}${SALVO_PATHS.map((to, k) => `.bs${k}{animation-name:bs${k}}@keyframes bs${k}{0%{transform:none;visibility:visible}96%{visibility:visible}100%{transform:${to};visibility:hidden}}`).join('')}`
+
 const svg = scene()
 const svgWork = scene({ style: WORK })
 const svgLaunch = scene({ style: LAUNCH, sky: beetle })
 const svgReturn = scene({ style: RETURN, sky: beetle })
+const svgSalvo = scene({ style: SALVO, sky: salvo })
 const rockyScene = (mode, style = '') => { const r = buildRocky(IDX, mode); return scene({ style: style + r.css, front: r.markup }) }
 const svgAsk = rockyScene('ask') //     Rocky walks in, waves, sings, stomps while a question waits
 const svgPermit = rockyScene('permit') // holds up an "ALLOW, QUESTION?" sign while a permission prompt waits
 const svgLeave = rockyScene('leave') // and walks back out once it's answered or dropped
 const svgAmaze = rockyScene('amaze') // a long task finished: Rocky pops in — "Amaze!"
 
-const OUT = { '': svg, '-work': svgWork, '-launch': svgLaunch, '-return': svgReturn, '-ask': svgAsk, '-permit': svgPermit, '-leave': svgLeave, '-amaze': svgAmaze }
+const OUT = { '': svg, '-work': svgWork, '-launch': svgLaunch, '-return': svgReturn, '-salvo': svgSalvo, '-ask': svgAsk, '-permit': svgPermit, '-leave': svgLeave, '-amaze': svgAmaze }
 for (const [k, v] of Object.entries(OUT)) {
   fs.writeFileSync(OUT_SVG.replace(/\.svg$/, `${k}.svg`), v)
   console.log((k || 'idle').padEnd(8), v.length, v.length > 131072 ? 'OVER LIMIT' : '')
@@ -297,6 +311,7 @@ export const SCENE = ${JSON.stringify(svg)}
 export const SCENE_WORK = ${JSON.stringify(svgWork)}
 export const SCENE_LAUNCH = ${JSON.stringify(svgLaunch)}
 export const SCENE_RETURN = ${JSON.stringify(svgReturn)}
+export const SCENE_SALVO = ${JSON.stringify(svgSalvo)}
 export const SCENE_ASK = ${JSON.stringify(svgAsk)}
 export const SCENE_PERMIT = ${JSON.stringify(svgPermit)}
 export const SCENE_LEAVE = ${JSON.stringify(svgLeave)}

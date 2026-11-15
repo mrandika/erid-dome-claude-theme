@@ -53,6 +53,7 @@ const PREVIEWS = [
   ['ask', 'erid-dome-ask.svg', 'light', 12.8],
   ['amaze', 'erid-dome-amaze.svg', 'dark', 6.6],
   ['return', 'erid-dome-return.svg', 'light', 3.2],
+  ['salvo', 'erid-dome-salvo.svg', 'dark', 4.4],
   ['permit', 'erid-dome-permit.svg', 'dark', 9.2],
   ['tasks', withLayers('erid-dome-work.svg', [TASKS]), 'dark', 4],
   ['compact', withLayers('erid-dome.svg', [COMPACT], 1.5), 'light', 6],
