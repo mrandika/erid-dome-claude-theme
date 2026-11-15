@@ -7,7 +7,7 @@ A Claude Code **function-hooks mod**: TypeScript hooks that the engine loads. It
 | Path | What |
 |---|---|
 | `.claude-plugin/plugin.json` | Manifest: `name` `erid-dome`, `version`, `description`, and `types: ./types/index.d.ts` |
-| `.claude-plugin/marketplace.json` | Makes this folder a local marketplace (`erid-dome-local`) listing the mod at `./` |
+| `.claude-plugin/marketplace.json` | Makes this repo a marketplace (`erid-dome`) listing the mod at `./` |
 | `.claude-plugin/types/` | Written by the engine when it loads the mod: API typings plus `tsconfig.json`. Don't edit |
 | `hooks/hooks.json` | `{ "modules": ["./register.tsx"] }` |
 | `hooks/register.tsx` | All hooks: theme, stage machine, timers, commands, backdrop render |
@@ -27,7 +27,7 @@ The repository is its own marketplace. From a terminal:
 claude plugin marketplace add mrandika/erid-dome-claude-theme
 ```
 ```bash
-claude plugin install erid-dome@erid-dome-local
+claude plugin install erid-dome@erid-dome
 ```
 
 ### From a clone (for development)
@@ -38,7 +38,7 @@ Add the cloned folder as the marketplace instead, so it is read in place and edi
 claude plugin marketplace add /path/to/erid-dome-claude-theme
 ```
 ```bash
-claude plugin install erid-dome@erid-dome-local
+claude plugin install erid-dome@erid-dome
 ```
 
 After editing, run `/reload-plugins` in a session. A plugin read from its folder is re-read from there; no reinstall is needed.

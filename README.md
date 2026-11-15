@@ -43,7 +43,7 @@ This repository is both the mod and a marketplace. From a terminal:
 claude plugin marketplace add mrandika/erid-dome-claude-theme
 ```
 ```bash
-claude plugin install erid-dome@erid-dome-local
+claude plugin install erid-dome@erid-dome
 ```
 
 To hack on it, clone the repo and add the folder instead (`claude plugin marketplace add /path/to/erid-dome-claude-theme`), so the plugin is read in place. After editing, run `/reload-plugins`. Only one theme shows at a time: if `hail-mary` is also enabled, the last one set wins, and `/erid` brings this one back.
