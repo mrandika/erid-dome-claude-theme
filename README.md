@@ -120,4 +120,4 @@ An unofficial, non-commercial fan project. It is not affiliated with or endorsed
 
 Everything here is drawn by this project's own code in pixel art. The composition follows the film's closing shot at Durdle Door (see [docs/art-direction.md](docs/art-direction.md)), and Rocky's look follows the book and the film.
 
-The code, pixel art and docs are under the [MIT License](LICENSE), which grants no rights in *Project Hail Mary* itself.
+The code, pixel art and docs are under the [MIT License](LICENSE), which grants no rights in *Project Hail Mary* itself (see [NOTICE](NOTICE)).
