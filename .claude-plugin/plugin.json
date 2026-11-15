@@ -1,0 +1,6 @@
+{
+  "name": "erid-dome",
+  "version": "0.2.0",
+  "description": "Project Hail Mary look: Grace's dome on Erid, an animated pixel-art beach with a day/night palette. Rocky walks in and sings when Claude asks you a question.",
+  "types": "./types/index.d.ts"
+}

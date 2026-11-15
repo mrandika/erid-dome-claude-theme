@@ -1,0 +1,6 @@
+{
+  "name": "erid-dome-local",
+  "owner": { "name": "local" },
+  "description": "Local marketplace for the erid-dome theme mod (Project Hail Mary: Grace's dome on Erid)",
+  "plugins": [{ "name": "erid-dome", "source": "./" }]
+}
