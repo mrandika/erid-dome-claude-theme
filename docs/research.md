@@ -15,7 +15,7 @@ In the film's ending, Grace lives on Erid inside an Eridian-built biodome, compl
 | **Astrophage** | Microbe that eats starlight, stores huge energy, emits infrared at about 25.984 µm. It's the ships' fuel | The Beetle's amber/red drive glow; "Astrophage violet" `pro` colour |
 | **Petrova line** | A faint infrared line from the Sun toward Venus, caused by migrating Astrophage | `danger` red `#b8432f`, note colour `nt2` |
 | **Taumoeba** | The Astrophage-eating microbe found near Tau Ceti | not drawn |
-| **Hail Mary** | Grace's ship | (the user's other mod, hail-mary) |
+| **Hail Mary** | Grace's ship | (the companion hail-mary mod) |
 | **Blip-A** | Rocky's ship | (hail-mary mod) |
 | **Beetles** | Four small return probes carrying the data home, named John, Paul, George and Ringo | A Beetle launch when a subagent starts; all four in a salvo when Claude pushes its work |
 | **Xenonite** | Eridian building material, extremely strong | Faceted, triangular construction of Grace's house; Rocky's glass suit |
@@ -47,7 +47,7 @@ In the film's ending, Grace lives on Erid inside an Eridian-built biodome, compl
 | Voice | Five vocal bladders sound notes at once, so every word is a chord and every sentence a run of chords. The audiobook pairs Ray Porter's voice with musical tones |
 | Habits | Excited "jazz hands", "Amaze!", "fist my bump". He sleeps rigid and motionless, and Grace watches over him; noted as an idea, not drawn |
 | Look in the film | A practical puppet designed by James Ortiz, who also voices and performs him, operated by six puppeteers; the team are called the "Rockyteers". An animatronic version was used only rarely. Neal Scanlan's creature shop built them. The body is brown stone with green mineral flecks and a strap band on one limb |
-| Beach suit | In the film's beach shot, Rocky wears a clear, triangle-faceted geodesic shell wrapped around his body and each leg. This comes from your photo; written sources didn't describe it |
+| Beach suit | In the film's beach shot, Rocky wears a clear, triangle-faceted geodesic shell wrapped around his body and each leg. This comes from a photo of the scene; written sources didn't describe it |
 
 ## Durdle Door (the real location)
 

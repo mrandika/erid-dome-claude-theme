@@ -4,7 +4,7 @@ How the theme got here, built over one session on 2026-11-15.
 
 **0.1.0: first theme**
 - Researched the film, Erid, Rocky and Durdle Door ([research.md](research.md)).
-- Drafted four art styles (matte, low-poly, screenprint, pixel); the user chose pixel art.
+- Drafted four art styles (matte, low-poly, screenprint, pixel) and chose pixel art.
 - Built a 240×135 pixel Erid beach with an animated swash, sparkle, clouds and a swaying tree, plus a night palette for dark mode.
 - Added app colours via `makeColors`: Erid teal, Petrova red, jade, rust and Astrophage violet.
 
@@ -18,7 +18,7 @@ How the theme got here, built over one session on 2026-11-15.
 
 **0.2.0: Rocky**
 - Added pixel Rocky in his faceted glass suit, walking in while Claude asks a question.
-- Redrew him from the user's model sheet: an acorn torso, with slab legs out and straight down rather than arched.
+- Redrew him from a model sheet: an acorn torso, with slab legs out and straight down rather than arched.
 - Gave him a four-beat gait and a faster walk-in that starts as soon as the question begins streaming (`turn.step`).
 - Routine: wave once, stand by with chord bubbles, three stomps if unanswered, repeat. No dust or jolt.
 - He walks back out once the question is answered or dropped (a third scene, plus a timer).
@@ -26,7 +26,7 @@ How the theme got here, built over one session on 2026-11-15.
 **Reactions**
 - Work mode: dome lamps on and Grace's window glowing while Claude works.
 - A Beetle launch when a subagent starts.
-- Rocky's "AMAZE!" jazz hands after turns of 60 s or more. The threshold went to 20 s and back to 60 s at the user's request.
+- Rocky's "AMAZE!" jazz hands after turns of 60 s or more. The threshold was tried at 20 s and went back to 60 s.
 - `/erid launch | ask | amaze | working` replays a reaction.
 - A new turn no longer cuts off a playing Beetle or AMAZE!.
 
@@ -54,7 +54,7 @@ How the theme got here, built over one session on 2026-11-15.
 
 **0.4.0: the Beetles fly home**
 - A successful `git push` sends a salvo: four Beetles (John, Paul, George, Ringo) launch half a second apart and fan out across Erid's sky, as Grace sent his data home.
-- Beetles now fly outside the dome: drawn behind its ribs and clouds at 80% opacity, seen through the glass. Flying them inside an enclosed habitat didn't make sense (the user's catch). The launch and return previews were re-rendered.
+- Beetles now fly outside the dome: drawn behind its ribs and clouds at 80% opacity, seen through the glass. Flying them inside an enclosed habitat didn't make sense. The launch and return previews were re-rendered.
 - Every Beetle now launches from behind the ridge at the left edge and climbs out of the top, past Grace's house: the upper right, where they used to fly, sits under the chat panel.
 - `/erid salvo`, a push test, and a salvo preview.
 

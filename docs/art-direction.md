@@ -4,7 +4,7 @@ The decisions behind the look, so later changes stay consistent.
 
 ## Reference and composition
 
-The composition is traced from a frame of the film's ending, 739×415 px scaled to the 1600×900 scene (factor ≈2.166). Reading left to right:
+The composition's outlines (ridge, arch, shore, house, stairs and tree) were traced from a frame of the film's closing shot at Durdle Door, 739×415 px scaled to the 1600×900 scene (factor ≈2.166), and then redrawn as a 240×135 pixel grid in code. The frame itself is not part of this project. Reading left to right:
 
 1. **Grace's house** sits top-left on a mossy hill: a charcoal timber cabin topped by a tilted, faceted xenonite-style truss. Stairs are cut down the rock face to the beach.
 2. **A bleached, nearly leafless tree** stands just right of the house.
@@ -18,7 +18,7 @@ The subject keeps clear of the screen's middle, where text sits, and its foot, w
 
 ## Style choice
 
-Four drafts were made from the same geometry. The user picked **pixel art**.
+Four drafts were made from the same geometry, and **pixel art** was picked.
 
 | Draft | Look | Why not chosen / notes |
 |---|---|---|
@@ -97,7 +97,7 @@ Work mode (Claude is busy) changes three colours: lamps `#f6bd52`, window `#ffcf
 
 ## Rocky's design
 
-These rules came from the user's references, the last of which were a 3D model sheet and two figure photos.
+These rules came from the references used, the last of which were a 3D model sheet and two figure photos.
 
 - **Front view.** Eridians have no front, so the same sprite walks toward or away from the viewer.
 - **Torso:** an "acorn" shape, wide and lumpy on top, tapering to a dark opening underneath. It has a crack down the front, facet seams and green flecks.

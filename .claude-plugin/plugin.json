@@ -2,5 +2,6 @@
   "name": "erid-dome",
   "version": "0.4.0",
   "description": "Project Hail Mary look: Grace's dome on Erid, an animated pixel-art beach with a day/night palette. Rocky walks in for questions and permission prompts, Beetles fly for subagents and pushes, task lamps light on the sand and a haze thickens as the context fills.",
-  "types": "./types/index.d.ts"
+  "types": "./types/index.d.ts",
+  "license": "MIT"
 }

@@ -114,6 +114,10 @@ This opens each scene in headless Chromium, pauses its animations and steps the 
 - Keep each ambient loop's duration the same in every scene, and list it in `SYNC`.
 - A freeze only shows in the app, never in a browser preview.
 
-## Credits
+## Credits and license
 
-Fan art for personal use, drawn from scratch in pixel art. *Project Hail Mary* is Andy Weir's novel and the 2026 film. Rocky and the Eridians are his creations.
+An unofficial, non-commercial fan project. It is not affiliated with or endorsed by Andy Weir, his publishers or the film's studio. *Project Hail Mary* is Andy Weir's novel (2021) and the 2026 film; Rocky, the Eridians, Erid and the Beetles are his creations, and the film's designs belong to their owners.
+
+Everything here is drawn by this project's own code in pixel art. The composition follows the film's closing shot at Durdle Door (see [docs/art-direction.md](docs/art-direction.md)), and Rocky's look follows the book and the film.
+
+The code, pixel art and docs are under the [MIT License](LICENSE), which grants no rights in *Project Hail Mary* itself.

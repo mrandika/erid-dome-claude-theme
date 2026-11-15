@@ -32,7 +32,7 @@ grep -cE 'crispEdges|aspect-ratio|view-box|#[a-zA-Z][a-zA-Z0-9_-]*[ ,]*\{' scene
 
 1. Build probe backdrops with `scene/build-probes.mjs`. Each draws an orange disc that slides back and forth plus a blinking bar, so "moving or frozen" is obvious.
 2. Wire them into a temporary command that calls `$.theme.set({ backdrop: { scene: 'probe-<name>' } })`, with the Backdrop hook drawing `PROBES[name]`.
-3. The user runs them one at a time and reports moving or frozen:
+3. Run them one at a time in the app and note whether each moves or freezes:
 
 | Probe | What it adds | Result |
 |---|---|---|
