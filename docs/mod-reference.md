@@ -57,10 +57,10 @@ Only one theme stands at a time, and the last plugin to call `$.theme.set` wins.
 `session.start` calls:
 
 ```ts
-$.theme.set({ colors: COLORS, backdrop: { scene: 'erid-dome', glass: { blur: 12, opacity: 0.62 } } })
+$.theme.set({ colors: COLORS, backdrop: { scene: 'erid-dome', glass: { blur: 28, opacity: 0.42 } } })
 ```
 
-- **`glass`** is how the desktop app frosts its panels over the backdrop: a 12 pt blur, 62% opacity, and no `tint`, so each panel keeps its own colour per mode. On mobile it's one veil over the whole scene.
+- **`glass`** is how the desktop app frosts its panels over the backdrop: a 28 pt blur, 42% opacity, and no `tint`, so each panel keeps its own colour per mode. On mobile it's one veil over the whole scene.
 - **No `overrideColorScheme`:** both modes are given, and the scene follows the system's dark mode itself through CSS.
 - **If it isn't drawn** (no desktop or mobile surface attached), the reason shows in the status line.
 
@@ -128,7 +128,7 @@ The module variables `isBusy` and `pending` are lost on a hot reload. `session.s
 | `LAUNCH_MS` | 2900 | The Beetle's flight, 2.6 s |
 | `AMAZE_MS` | 6700 | The amaze timeline, 6.4 s |
 | `LONG_TURN_MS` | 60 000 | How long a turn must run to earn an "AMAZE!" |
-| `GLASS` | `{ blur: 12, opacity: 0.62 }` | Panel frosting |
+| `GLASS` | `{ blur: 28, opacity: 0.42 }` | Panel frosting |
 
 ## Checking the mod
 

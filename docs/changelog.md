@@ -37,3 +37,7 @@ How the theme got here, built over one session on 2026-11-15.
 **Packaging**
 - Moved the mod into this project folder as the single source, with a local marketplace manifest.
 - Wrote these docs.
+
+**Softer frosting**
+- Panel glass raised from blur 12 / opacity 0.62 to blur 28 / opacity 0.55. At 12 the pixel cliff, house and arch showed through as blocky smears; at 28 they melt into a colour wash and a little more of the scene tint reaches the panels.
+- Opacity then lowered to 0.42: the light-mode panel (a pale grey) over the dark sand lifted it to a milky white haze at the bottom of the chat. A tint can't fix it, since the one tint applies in both modes and the mod can't tell which is showing.

@@ -14,7 +14,9 @@ import type { Stage } from '../types'
 //   leaving  – the question is answered or dropped: he walks back out
 //   amaze    – a long task finished: Rocky pops in for jazz hands and an "AMAZE!"
 const SCENE_NAME = 'erid-dome'
-const GLASS = { blur: 12, opacity: 0.62 }
+// High blur melts the pixel edges into a colour wash. Opacity stays low: the light
+// panel over the dark sand reads as a milky white haze above about 0.5.
+const GLASS = { blur: 28, opacity: 0.42 }
 const WALK_OUT_MS = 2800 // the leave scene's walk (2.4s) plus a little slack
 const LAUNCH_MS = 2900 // the Beetle's flight (2.6s) plus a little slack
 const AMAZE_MS = 6700 // pop in, celebrate, walk out (6.4s) plus a little slack
