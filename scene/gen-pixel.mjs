@@ -1,6 +1,6 @@
 // Pixel-art Erid beach (Grace's dome) — generates the backdrop SVG.
 // usage (from the project folder): node scene/gen-pixel.mjs [<out.svg>] [<out scene.ts>]
-//   defaults: scene/erid-dome.svg (+ -work, -launch, -ask, -leave, -amaze) and hooks/scene.ts
+//   defaults: scene/erid-dome.svg (+ -work, -launch, -return, -ask, -permit, -leave, -amaze) and hooks/scene.ts
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -245,7 +245,9 @@ ${swash}
 </g>`
 
 const wrap = (style, inner) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 ${r1(-PAD)} ${W} ${r1(H + 2 * PAD)}" preserveAspectRatio="xMinYMid slice"><style>${style}</style><defs>${defs}</defs>${inner}</svg>`.replace(/\n/g, '')
-const scene = ({ style = '', sky = '', front = '' } = {}) => wrap(css + style, body.replace('{{SKY}}', sky).replace(/<\/g>$/, front + '</g>'))
+// OVERLAY marks where the mod draws its live layers (the haze, the task markers): over the beach, under Rocky
+const OVERLAY = '<g class="ov"></g>'
+const scene = ({ style = '', sky = '', front = '' } = {}) => wrap(css + style, body.replace('{{SKY}}', sky).replace(/<\/g>$/, OVERLAY + front + '</g>'))
 
 // working: Claude is on a turn — the dome lamps come on, Grace's window glows, the sea livens up
 const WORK = `.lamp{opacity:1;animation:lp 5s step-end infinite}
@@ -266,15 +268,22 @@ const beetle = (() => {
 const LAUNCH = `${WORK}
 .bt{animation:bt 2.6s cubic-bezier(.4,0,.8,.7) both}@keyframes bt{0%{transform:none;visibility:visible}96%{visibility:visible}100%{transform:${BEETLE_PATH};visibility:hidden}}`
 
+// a Beetle comes home (a subagent has finished): the same probe drops back down the dome toward the hill,
+// drive first as it brakes, and sinks behind the ridge
+const RETURN = `${WORK}
+.bt{animation:br 2.6s cubic-bezier(.2,.4,.5,1) both}@keyframes br{0%{transform:${BEETLE_PATH};visibility:visible}96%{visibility:visible}100%{transform:none;visibility:hidden}}`
+
 const svg = scene()
 const svgWork = scene({ style: WORK })
 const svgLaunch = scene({ style: LAUNCH, sky: beetle })
+const svgReturn = scene({ style: RETURN, sky: beetle })
 const rockyScene = (mode, style = '') => { const r = buildRocky(IDX, mode); return scene({ style: style + r.css, front: r.markup }) }
 const svgAsk = rockyScene('ask') //     Rocky walks in, waves, sings, stomps while a question waits
+const svgPermit = rockyScene('permit') // holds up an "ALLOW, QUESTION?" sign while a permission prompt waits
 const svgLeave = rockyScene('leave') // and walks back out once it's answered or dropped
 const svgAmaze = rockyScene('amaze') // a long task finished: Rocky pops in — "Amaze!"
 
-const OUT = { '': svg, '-work': svgWork, '-launch': svgLaunch, '-ask': svgAsk, '-leave': svgLeave, '-amaze': svgAmaze }
+const OUT = { '': svg, '-work': svgWork, '-launch': svgLaunch, '-return': svgReturn, '-ask': svgAsk, '-permit': svgPermit, '-leave': svgLeave, '-amaze': svgAmaze }
 for (const [k, v] of Object.entries(OUT)) {
   fs.writeFileSync(OUT_SVG.replace(/\.svg$/, `${k}.svg`), v)
   console.log((k || 'idle').padEnd(8), v.length, v.length > 131072 ? 'OVER LIMIT' : '')
@@ -287,7 +296,9 @@ export const SYNC: [string, number, number?][] = ${JSON.stringify(SYNC)}
 export const SCENE = ${JSON.stringify(svg)}
 export const SCENE_WORK = ${JSON.stringify(svgWork)}
 export const SCENE_LAUNCH = ${JSON.stringify(svgLaunch)}
+export const SCENE_RETURN = ${JSON.stringify(svgReturn)}
 export const SCENE_ASK = ${JSON.stringify(svgAsk)}
+export const SCENE_PERMIT = ${JSON.stringify(svgPermit)}
 export const SCENE_LEAVE = ${JSON.stringify(svgLeave)}
 export const SCENE_AMAZE = ${JSON.stringify(svgAmaze)}
 `)

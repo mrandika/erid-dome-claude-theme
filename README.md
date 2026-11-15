@@ -14,6 +14,10 @@ A Claude Code theme mod inspired by *Project Hail Mary*. It shows Grace's beach 
 | **Working.** Claude is on a turn: lamps on, window glowing | **Launch.** A subagent starts: a Beetle probe streaks past |
 | ![Ask: Rocky walks in, waves, sings and stomps](docs/previews/ask.gif) | ![Amaze: Rocky does jazz hands under an AMAZE! sign](docs/previews/amaze.gif) |
 | **Ask.** Claude asks you something: Rocky walks in, waves, sings, stomps | **Amaze.** A turn of a minute or more finishes |
+| ![Permit: Rocky walks in at night holding up an ALLOW, QUESTION? sign and stomps](docs/previews/permit.gif) | ![Return: a Beetle probe drops back down the dome behind the hill](docs/previews/return.gif) |
+| **Permit.** A permission prompt waits: Rocky holds up "ALLOW, QUESTION?" | **Return.** A subagent finishes: its Beetle comes home |
+| ![Tasks: marker lamps in the bottom-left corner of the sand, two lit, one blinking, two dark](docs/previews/tasks.gif) | ![Compaction: a dense haze over the dome blows away to the right](docs/previews/compact.gif) |
+| **Tasks.** A lamp per task in the bottom-left corner: lit when done, blinking in hand | **Haze.** The dome thickens as the context fills; a compaction blows it away |
 
 Every reaction works in both modes; the GIFs mix them to show both palettes.
 
@@ -27,13 +31,19 @@ Every reaction works in both modes; the GIFs mix them to show both palettes.
 | Claude starts writing a question | Rocky walks up in his faceted glass suit, waves once, then stands by singing chords. Every ~6 s without an answer he stomps three times |
 | The question is answered or dropped | Rocky walks back out |
 | A turn of 1 minute or more finishes | Rocky pops in for jazz hands under an "AMAZE!" sign |
+| A subagent finishes | Its Beetle drops back down the dome and lands behind the hill |
+| A permission prompt waits | Rocky walks up holding an "ALLOW, QUESTION?" sign, stomping now and then, and walks out once it's settled |
+| Claude keeps a task list | A marker lamp stands on the sand per task: dark while waiting, blinking while in hand, lit once done. A finished list clears 12 s after the turn ends |
+| The context window fills | A haze thickens in the dome, from faint at 35% full to dense past 85% |
+| The conversation is compacted | The haze blows away to the right as it thins |
 
 Light mode is the dome by day. Dark mode is the dome at night: deep teal sky, lamps along the ribs, a lit window. Scene changes keep the clouds, waves and lamps in step, so nothing jumps.
 
 ### Commands
 
 - `/erid` puts the theme back on, for example after trying another theme.
-- `/erid launch`, `/erid ask`, `/erid amaze` and `/erid working` replay one reaction so you can look at it.
+- `/erid launch`, `/erid return`, `/erid ask`, `/erid permit`, `/erid amaze` and `/erid working` replay one reaction so you can look at it.
+- `/erid haze 0-5` sets the haze until the next measurement (a lower level blows it away, as a compaction does), and `/erid tasks` stands four demo lamps on the sand for 15 s.
 
 ## Install
 
@@ -55,10 +65,12 @@ To hack on it, clone the repo and add the folder instead (`claude plugin marketp
 | `.claude-plugin/` | `plugin.json` (the mod) and `marketplace.json` (local install) |
 | `hooks/register.tsx` | The stage machine, hooks, `/erid` command and backdrop render |
 | `hooks/look.ts` | App colours (`makeColors`) |
+| `hooks/overlay.ts` | The live layers drawn into any scene: the haze and the task lamps |
 | `hooks/scene.ts` | **Generated** scenes plus the `SYNC` table; don't edit |
-| `types/index.d.ts` | The `stage` state contract |
-| `scene/gen-pixel.mjs` | Draws the beach and writes all six scenes and `hooks/scene.ts` |
-| `scene/rocky.mjs` | Pixel Rocky: poses, glass suit, chords, the AMAZE! sign, timelines |
+| `hooks/*.test.ts(x)` | Tests: the backdrop render, task lamps, haze, permission prompt and Beetle return (`claude plugin test .`) |
+| `types/index.d.ts` | The `stage`, `haze` and `tasks` state contract |
+| `scene/gen-pixel.mjs` | Draws the beach and writes all eight scenes and `hooks/scene.ts` |
+| `scene/rocky.mjs` | Pixel Rocky: poses, glass suit, chords, the AMAZE! and ALLOW, QUESTION? signs, timelines |
 | `scene/erid-dome*.svg` | The generated scenes, for previewing in a browser |
 | `scene/render-previews.mjs` | Renders the README GIFs in `docs/previews/` |
 | `scene/build-probes.mjs` | Diagnostic backdrops for finding animation freezes |

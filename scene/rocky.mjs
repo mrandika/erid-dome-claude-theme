@@ -7,6 +7,7 @@ export const ROCKY_PAL = [
   ['rkG', '#5fc7a1', '#4fb592'], ['rkB', '#46281a', '#2c1910'],
   ['gls', '#e6f5f2', '#a9dcd5'], ['glw', '#ffffff', '#d9fff9'],
   ['bub', '#f4f6f1', '#bfe3dd'], ['nt1', '#2f8f88', '#7fe0d8'], ['nt2', '#b8432f', '#ff8a6a'], ['nt3', '#b07a2a', '#ffc76b'],
+  ['sgn', '#2f8f88', '#1d5551'], // the permit sign's text: stays dark on the pale board at night
 ]
 
 const key = (x, y) => `${x},${y}`
@@ -70,6 +71,11 @@ const TALK = hand => [BL, BR, C5, FR, L([-6, -15], [-15, -15], hand, { arm: true
 const LIFT = [BL, BR, C5, FL, L(FR.s, [17, -19], [20, -10])]
 // celebrating: both front limbs up, hands open, wiggling ("jazz hands")
 const JAZZ = (l, r) => [BL, BR, C5, L([-6, -15], [-15, -15], l, { arm: true, hand: true }), L([7, -15], [16, -15], r, { arm: true, hand: true })]
+// waiting on a permission: the front-left limb holds a sign up on a short stick; SIGN_LIFT stomps while holding it
+const SIGN_HAND = [-16, -26]
+const SIGN_ARM = L([-6, -15], [-15, -16], SIGN_HAND, { arm: true, hand: true })
+const SIGN = [BL, BR, C5, FR, SIGN_ARM]
+const SIGN_LIFT = [BL, BR, C5, L(FR.s, [17, -19], [20, -10]), SIGN_ARM]
 const DECOR = { flecks: ['-13,-12', '14,-12', '3,-15', '-15,-5', '16,-6', '-9,-20', '10,-20', '-4,-13'] }
 
 function runs(map) { // Map key->colour => { colour: 'M x y.5h w...' }
@@ -89,7 +95,13 @@ function bubble(noteCls) {
 }
 
 // 5-row pixel font for the sign
-const GLYPH = { A: [' # ', '# #', '###', '# #', '# #'], M: ['#   #', '## ##', '# # #', '#   #', '#   #'], Z: ['###', '  #', ' # ', '#  ', '###'], E: ['###', '#  ', '## ', '#  ', '###'], '!': ['#', '#', '#', ' ', '#'] }
+const GLYPH = {
+  A: [' # ', '# #', '###', '# #', '# #'], M: ['#   #', '## ##', '# # #', '#   #', '#   #'], Z: ['###', '  #', ' # ', '#  ', '###'], E: ['###', '#  ', '## ', '#  ', '###'], '!': ['#', '#', '#', ' ', '#'],
+  O: [' # ', '# #', '# #', '# #', ' # '], K: ['# #', '# #', '## ', '# #', '# #'], '?': ['## ', '  #', ' # ', '   ', ' # '],
+  L: ['#  ', '#  ', '#  ', '#  ', '###'], W: ['#   #', '#   #', '# # #', '## ##', '#   #'], ',': [' ', ' ', ' ', '#', '#'],
+  Q: [' # ', '# #', '# #', '## ', ' ##'], U: ['# #', '# #', '# #', '# #', '###'], S: [' ##', '#  ', ' # ', '  #', '## '],
+  T: ['###', ' # ', ' # ', ' # ', ' # '], I: ['#', '#', '#', '#', '#'], N: ['#  #', '## #', '# ##', '#  #', '#  #'],
+}
 function sign(text) {
   let x = 0, d = ''
   for (const ch of text) { const g = GLYPH[ch]; g.forEach((row, y) => { for (let i = 0; i < row.length; i++) if (row[i] === '#') { let e = i; while (row[e + 1] === '#') e++; d += `M${x + i} ${y}.5h${e - i + 1}`; i = e } }); x += g[0].length + 1 }
@@ -103,7 +115,9 @@ export function buildRocky(IDX, mode = 'ask', at = [214, 128]) {
     ? { st: STAND, w1: W1, w3: W3, t1: TALK([-16, -25]), t2: TALK([-19, -24]), lf: LIFT }
     : mode === 'amaze'
       ? { st: STAND, w1: W1, w3: W3, j1: JAZZ([-17, -26], [18, -26]), j2: JAZZ([-19, -24], [20, -24]) }
-      : { st: STAND, w1: W1, w3: W3 }
+      : mode === 'permit'
+        ? { st: STAND, w1: W1, w3: W3, sg: SIGN, sl: SIGN_LIFT }
+        : { st: STAND, w1: W1, w3: W3 }
   const frames = Object.fromEntries(Object.entries(poses).map(([k, p]) => [k, flat(sprite(p, DECOR))]))
   const all = Object.values(frames)
   // pixels identical in every pose are drawn once; each pose carries only its differences
@@ -145,6 +159,37 @@ export function buildRocky(IDX, mode = 'ask', at = [214, 128]) {
 .rsg{animation:rsg .8s step-end ${IN}s infinite}@keyframes rsg{50%{transform:translateY(-1px)}}
 .bb{opacity:0;animation:bb 2.4s steps(16) infinite}@keyframes bb{0%{opacity:0;transform:translate(0,0)}8%{opacity:1}75%{opacity:1}100%{opacity:0;transform:translate(0,-16px)}}
 .bb0{animation-delay:${fx(IN + .1)}s}.bb1{animation-delay:${fx(IN + .7)}s}.bb2{animation-delay:${fx(IN + 1.3)}s}`
+    return { markup, css }
+  }
+
+  if (mode === 'permit') {
+    // walk in (2.4s), raise an "ALLOW, / QUESTION?" sign on a stick (Rocky ends a question with
+    // "question?"), then a loop: hold it up, bobbing (4.6s), stomp twice (1.8s) without lowering it
+    const HOLD = 4.6, STOMP = .9, LIFT_S = .4, CYCLE = HOLD + 2 * STOMP
+    const pc = t => +(t / CYCLE * 100).toFixed(2)
+    const lines = ['ALLOW,', 'QUESTION?'].map(sign), inner = Math.max(...lines.map(l => l.w))
+    const bw = inner + 4, rows = lines.length * 6 + 1, bx = SIGN_HAND[0] - Math.floor(bw / 2), top = SIGN_HAND[1] - 6 - rows
+    // a rounded board, one 5-row line of text per 6 rows, over a 2px stick that ends in his fingers
+    const boardD = `M${bx + 1} ${top}.5h${bw - 2}` + Array.from({ length: rows - 2 }, (_, r) => `M${bx} ${top + r + 1}.5h${bw}`).join('') + `M${bx + 1} ${top + rows - 1}.5h${bw - 2}`
+    const text = lines.map((l, i) => `<g transform="translate(${bx + 2 + Math.floor((inner - l.w) / 2)} ${top + 1 + i * 6})"><path class="${c('sgn')}" d="${l.d}"/></g>`).join('')
+    const board = `<g class="rsb"><path class="${c('rkB')}" d="M${SIGN_HAND[0]} ${top + rows}.5h1M${SIGN_HAND[0]} ${top + rows + 1}.5h1"/>`
+      + `<path class="${c('bub')}" d="${boardD}"/>${text}</g>`
+    let lift = '0%{opacity:0}', hold = '0%{opacity:1}'
+    for (let i = 0; i < 2; i++) { const t0 = HOLD + i * STOMP; lift += `${pc(t0)}%{opacity:1}${pc(t0 + LIFT_S)}%{opacity:0}`; hold += `${pc(t0)}%{opacity:0}${pc(t0 + LIFT_S)}%{opacity:1}` }
+    const loop = `${CYCLE}s step-end ${WALK}s infinite`
+    const markup = `<g transform="translate(${at[0]} ${at[1]})"><g class="rw">${shadow}`
+      + `<g class="rbw"><g class="rbt">${draw(cs, cg)}`
+      + `<g class="rst">${f.st}</g><g class="rw1">${f.w1}</g><g class="rw3">${f.w3}</g>`
+      + `<g class="rsn"><g class="rsp">${f.sg}</g><g class="rlf">${f.sl}</g>${board}</g></g></g></g></g>`
+    const css = `.gl{opacity:.45}.rsh{opacity:.35}${gait}
+.rw{animation:rw ${WALK}s linear both}@keyframes rw{from{transform:${FAR}}to{transform:none}}
+.rbt{animation:rbt 1.8s step-end ${WALK}s infinite}@keyframes rbt{50%{transform:translateY(-1px)}}
+.rst{animation:rst ${STEP}s step-end ${N}}
+/* shown from the end of the walk: both keyframes hold 1, as a step's last frame alone doesn't stick */
+.rsn{opacity:0;animation:on .01s ${WALK}s forwards}@keyframes on{from,to{opacity:1}}
+.rsp{animation:rsp ${loop}}@keyframes rsp{${hold}}
+.rlf{animation:rlf ${loop}}@keyframes rlf{${lift}}
+.rsb{animation:rsb .8s step-end ${WALK}s infinite}@keyframes rsb{50%{transform:translateY(-1px)}}`
     return { markup, css }
   }
 

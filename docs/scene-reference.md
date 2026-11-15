@@ -111,14 +111,16 @@ Every state change loads a different scene, which restarts its CSS. `scene.ts` e
 
 Rocky's routines and the Beetle are deliberately left out, because they start fresh.
 
-## The six scenes
+## The eight scenes
 
 | Export | File | Built from | About |
 |---|---|---|---|
 | `SCENE` | `erid-dome.svg` | base | 103K |
 | `SCENE_WORK` | `-work.svg` | base + `WORK` CSS: lamps on in amber, window and glow amber and pulsing, ribs at 50% | 103K |
 | `SCENE_LAUNCH` | `-launch.svg` | work + Beetle markup at `{{SKY}}` + `bt` animation | 105K |
+| `SCENE_RETURN` | `-return.svg` | work + the same Beetle, flown back by `br` | 105K |
 | `SCENE_ASK` | `-ask.svg` | base + `buildRocky('ask')` | 126K, the tightest |
+| `SCENE_PERMIT` | `-permit.svg` | base + `buildRocky('permit')`: the ALLOW, QUESTION? sign | 122K |
 | `SCENE_LEAVE` | `-leave.svg` | base + `buildRocky('leave')` | 113K |
 | `SCENE_AMAZE` | `-amaze.svg` | base + `buildRocky('amaze')` | 124K |
 
@@ -128,6 +130,16 @@ Rocky's routines and the Beetle are deliberately left out, because they start fr
 - **Probe:** a 6×4 dark body (`h0`) with a lit top edge (`lat`) and a drive flare in `nt3` and `nt2` at its lower-left, trailing end.
 - **Trail:** nine copies of a one-pixel trail mark, each on the same path with 0.07 s more delay and 10% less opacity.
 - **Flight:** `bt`, 2.6 s with `cubic-bezier(.4,0,.8,.7)` so it speeds up, to `translate(180px, -74px)`. It's hidden at the end.
+- **Return:** `br` flies the same path backwards in 2.6 s, easing out (`cubic-bezier(.2,.4,.5,1)`) so it brakes, drive flare first, and is hidden once it sinks behind the ridge.
+
+## The overlay slot
+
+Every scene has an empty `<g class="ov"></g>` after the swash and before Rocky. The mod replaces it at render time with its live layers from `hooks/overlay.ts`, and appends their CSS before `</style>`:
+
+- **Haze:** six full-width bands (rows −27 to 161) in `#e2ddc8` by day and `#4a6670` by night. The top band's opacity is 0.14 to 0.62 for levels 1–5, and each lower band takes a smaller share (down to a quarter at the near beach). Up to ten one-pixel streaks drift 20 px on a 120 s alternating loop. A level change crossfades in 4 s (`steps(8)`); a compaction slides the old layer 48 px right as it fades.
+- **Task lamps:** up to 12 markers in the bottom-left corner, clear of the chat's frosted panel: row 126, from x = 8, 7 px apart (the twelfth at x = 85). Each is a 1×5 post (`#7a6650`), a 3×2 head and a 3-pixel shadow. Heads are `#a89c8c` waiting, `#ffcf6b` blinking in hand, `#ffcf6b` steady when done (night: `#6b5d50` and `#ffb24c`). Row 126 stays on screen in windows up to 2:1.
+- **One-shots** (a lamp rising, a sparkle, a crossfade) run on a negative `animation-delay` measured from when the state changed, so a redraw mid-way picks them up where they were.
+- **Budget:** keep the busiest scene plus the fullest overlay under 131,072 characters; the render drops the lamps, then the haze, if it would pass.
 
 ## Adding to the scene
 
